@@ -1,3 +1,0 @@
-Mohammed är väldigt bra på frontend såsom NodeJs, React och Angular.
-Nu har han också lärt sig att göra AI agenter och annat LLM magi.
-Han är väldigt entusiastisk.
