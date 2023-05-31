@@ -2,3 +2,4 @@ node_modules/
 cvparser/cv-store/
 chroma/
 hnswstore/
+*.env
