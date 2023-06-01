@@ -13,7 +13,6 @@
     "@huggingface/inference": "^1.4.1",
     "brain.js": "^2.0.0-beta.23",
     "brainjs": "^0.7.4",
-    "chromadb": "^1.5.0",
     "csv": "^6.3.1",
     "d3-dsv": "^2.0.0",
     "dotenv": "^16.0.3",

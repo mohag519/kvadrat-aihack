@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Page</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f1f1f1;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+
+      p {
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #45a049;
+      }
+
+      .chatwindow {
+        width: 100%;
+        border: 1px grey solid;
+        border-radius: 6px;
+        min-height: 50px;
+      }
+
+      .inputprompt {
+        width: 100%;
+      }
+
+      .chattext {
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .question {
+        background-color: #c5c5ff;
+        margin: 6px 6px 6px 96px;
+      }
+      .answer {
+        background-color: #fff3c5;
+        margin: 6px 96px 18px 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>AI Powered examtype Crawler</h1>
+      <p>Please write your anamnes here</p>
+      <div class="chatwindow" id="chatwindow"></div>
+      <form onsubmit="event.preventDefault(); return onSubmit()">
+        <input
+          type="text"
+          name="inputprompt"
+          id="inputprompt"
+          class="inputprompt"
+          placeholder="Anamnes"
+        />
+      </form>
+    </div>
+
+    <script>
+      const onSubmit = async () => {
+        var inputPrompt = document.getElementById('inputprompt')
+        var query = inputPrompt.value
+        var encodedQuery = encodeURIComponent(query)
+        document.getElementById('chatwindow').innerHTML +=
+          '<p class="chattext question">Question: ' + query + '</p>'
+        inputPrompt.value = ''
+
+        var xmlHttp = new XMLHttpRequest()
+
+        xmlHttp.addEventListener('readystatechange', () => {
+          if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+            document.getElementById('chatwindow').innerHTML +=
+              '<p class="chattext answer">Answer: ' +
+              xmlHttp.responseText +
+              '</p>'
+          } else if (xmlHttp.readyState === 4) {
+            console.log('could not fetch the data')
+          }
+        })
+
+        xmlHttp.open(
+          'GET',
+          'http://127.0.0.1:8123/examtypes/query?input=' + encodedQuery,
+          true
+        )
+        xmlHttp.send(null)
+        return false
+      }
+    </script>
+  </body>
+</html>

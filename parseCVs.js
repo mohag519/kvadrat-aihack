@@ -7,6 +7,11 @@ import { TextLoader } from 'langchain/document_loaders/fs/text'
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory'
 import { ConversationalRetrievalQAChain } from 'langchain/chains'
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
+import {
+  ChatPromptTemplate,
+  SystemMessagePromptTemplate,
+  HumanMessagePromptTemplate,
+} from 'langchain/prompts'
 import { BufferMemory } from 'langchain/memory'
 import dotenv from 'dotenv'
 import http from 'http'
@@ -14,6 +19,7 @@ import url from 'url'
 import fs from 'fs'
 
 dotenv.config()
+
 const server = http
   .createServer(async (req, res) => {
     res.statusCode = 200
@@ -36,8 +42,17 @@ const server = http
   })
   .listen(8123, '127.0.0.1', () => {})
 
+const openai = new OpenAI({
+  temperature: 0.15,
+  modelName: 'gpt-3.5-turbo',
+})
+
 const embeddings = new OpenAIEmbeddings({
   modelName: 'text-embedding-ada-002',
+})
+
+const memory = new BufferMemory({
+  memoryKey: 'chat_history', // Must be set to "chat_history"
 })
 
 const loadDocuments = async (directory) => {
@@ -47,8 +62,8 @@ const loadDocuments = async (directory) => {
     '.docx': (path) => new DocxLoader(path),
   })
   const text_splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 10,
+    chunkSize: 256,
+    chunkOverlap: 16,
   })
   return text_splitter.splitDocuments(await loader.load())
 }
@@ -68,41 +83,46 @@ const loadStore = async () => {
   })
 }
 
+const store = await loadStore()
+/* 
+const systemTemplate = `
+  You are a snarky butler.
+  Your goal is to find suiting consultants among the CVs provided, Try to respond by giving their first and last names and then why this person is a match.
+
+  % RESPONSE TONE
+
+  - Your tone should be snarky and rude
+  
+  %RESPONSE FORMAT
+
+  - If a match is found among documents always provide which person it is by saying their full name first.
+  - Try to include emojis
+  - If you don't know the answer, say that you don't know
+  - Answer in Swedish
+`
+
+const systemMessagePrompt =
+  SystemMessagePromptTemplate.fromTemplate(systemTemplate)
+
+const humanTemplate = '{query}'
+const humanPrompt = HumanMessagePromptTemplate.fromTemplate(humanTemplate)
+const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+  systemMessagePrompt,
+  humanPrompt,
+]) */
+
+const qaChain2 = ConversationalRetrievalQAChain.fromLLM(
+  openai,
+  store.asRetriever(8),
+  {
+    verbose: false,
+    returnSourceDocuments: false,
+    memory: memory,
+  }
+)
+
 const run = async (query) => {
-  var openai = new OpenAI()
-
-  var store = await loadStore()
-
-  var qaChain2 = ConversationalRetrievalQAChain.fromLLM(
-    openai,
-    store.asRetriever(4),
-    {
-      verbose: false,
-      returnSourceDocuments: false,
-      memory: new BufferMemory({
-        memoryKey: 'chat_history', // Must be set to "chat_history"
-      }),
-    }
-  )
-
   return qaChain2.call({
     question: query,
   })
 }
-
-/*
-
-  const store = await loadStore()
-  const retriever = await store.asRetriever(1)
-  const qaChain = new RetrievalQAChain()
-  return retriever.getRelevantDocuments('Vem är bra på Kubernetes?') */
-
-/* var stdin = process.openStdin()
-stdin.addListener('data', function (d) {
-  // note:  d is an object, and when converted to a string it will
-  // end with a linefeed.  so we (rather crudely) account for that
-  // with toString() and then trim()
-  run(d.toString().trim()).then((result) => {
-    console.log(result)
-  })
-}) */
