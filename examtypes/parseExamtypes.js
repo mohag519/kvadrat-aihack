@@ -19,11 +19,11 @@ const openai = new OpenAI({ temperature: 0 })
 const memory = new BufferMemory({
   memoryKey: 'chat_history', // Must be set to "chat_history"
 })
-/* const embeddings = new OpenAIEmbeddings({ modelName: 'text-embedding-ada-002' }) */
-const embeddings = new HuggingFaceInferenceEmbeddings({
+const embeddings = new OpenAIEmbeddings({ modelName: 'text-embedding-ada-002' })
+/* const embeddings = new HuggingFaceInferenceEmbeddings({
   model: 'facebook/dino-vitb16',
   maxRetries: 3,
-})
+}) */
 const chain = loadQAMapReduceChain(openai, {
   returnIntermediateSteps: true,
   verbose: true,
@@ -54,7 +54,7 @@ const loadStore = async () => {
 
 const store = await loadStore()
 
-const memChain = ConversationalRetrievalQAChain.fromLLM(
+/* const memChain = ConversationalRetrievalQAChain.fromLLM(
   openai,
   store.asRetriever(8),
   {
@@ -68,10 +68,10 @@ await memChain.call({
   question: `You are a bot that will receive descriptions of hospital patients and their symptoms.
             Try to find types of examinations to conduct for the patients anamnes if possible. 
             If you can't find a suiting exam type then say "I don't know"`,
-})
+}) */
 
 const run = async (query) => {
-  /* const result = await chain.call({
+  const result = await chain.call({
     input_documents: await store.similaritySearch(query),
     question: `
       Answer as shortly as possible without omitting any Examination Type information 
@@ -80,11 +80,11 @@ const run = async (query) => {
       ${query}`,
   })
   console.log(result)
-  return result */
+  return result
 
-  return memChain.call({
+  /* return memChain.call({
     question: `${query}`,
-  })
+  }) */
 }
 
 //Simplest node server
@@ -108,4 +108,6 @@ const server = http
       res.end()
     }
   })
-  .listen(8123, '127.0.0.1', () => {})
+  .listen(8123, '127.0.0.1', () => {
+    console.log('Listening on 127.0.0.1:8123')
+  })
