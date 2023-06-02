@@ -16,9 +16,11 @@
     "csv": "^6.3.1",
     "d3-dsv": "^2.0.0",
     "dotenv": "^16.0.3",
+    "faiss-node": "^0.2.0",
     "hnswlib-node": "^1.4.2",
     "langchain": "^0.0.84",
     "mammoth": "^1.6.0",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "pickleparser": "^0.1.0"
   }
 }
