@@ -8,7 +8,7 @@ loader = CSVLoader(
     csv_args={
         "delimiter": ",",
         "quotechar": '"',
-        "fieldnames": ["Anamnes", "Examination Type"],
+        "fieldnames": ["Anamnesis", "Examination Type"],
     },
     encoding="utf8",
 )

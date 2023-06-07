@@ -1,5 +1,6 @@
 import { OpenAI } from 'langchain/llms/openai'
 import { FaissStore } from 'langchain/vectorstores/faiss'
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { CSVLoader } from 'langchain/document_loaders/fs/csv'
 import { loadQAMapReduceChain } from 'langchain/chains'
 import { HuggingFaceInferenceEmbeddings } from 'langchain/embeddings/hf'
@@ -23,6 +24,7 @@ const chain = loadQAMapReduceChain(openai, {
 })
 
 const loadStore = async () => {
+  /* const embeddings = new OpenAIEmbeddings({ modelName: 'text-embedding-ada-002' }) */
   const embeddings = new HuggingFaceInferenceEmbeddings({
     model: 'diptanuc/all-mpnet-base-v2',
   })
