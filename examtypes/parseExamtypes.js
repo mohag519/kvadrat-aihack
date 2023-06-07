@@ -91,6 +91,7 @@ const run = async (query) => {
 const server = http
   .createServer(async (req, res) => {
     res.statusCode = 200
+    res.setHeader('Access-Control-Allow-Origin', '*')
 
     if (req.url === '/examtypes/index.html') {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
